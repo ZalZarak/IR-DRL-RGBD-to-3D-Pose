@@ -512,7 +512,7 @@ class ModularDRLEnv(gym.Env):
 
     def _world_setup(self, env_config):
         world_type = env_config["world"]["type"]
-        world_config = env_config["world"]["config"]
+        world_config = env_config["world"]["config"] if env_config["world"]["config"] is not None else dict()
         world_config["assets_path"] = self.assets_path
         world_config["env_id"] = self.env_id
         world_config["sim_step"] = self.sim_step
@@ -579,7 +579,7 @@ class ModularDRLEnv(gym.Env):
             if "goal" in robo_entry:
                 # create the goal indicated by the config
                 goal_type = robo_entry["goal"]["type"]
-                goal_config = robo_entry["goal"]["config"]
+                goal_config = robo_entry["goal"]["config"] if robo_entry["goal"]["config"] is not None else dict()
                 goal_config["robot"] = robot
                 goal_config["train"] = self.train
                 goal_config["normalize_rewards"] = self.normalize_rewards
