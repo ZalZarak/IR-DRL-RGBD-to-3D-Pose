@@ -12,6 +12,7 @@ __all__ = [
     'S2RExperimentVoxels'
 ]
 
+
 class S2RExperiment(World):
     """
     This class replicates our real world setup and implements a few moderately constricted experiments
@@ -187,7 +188,7 @@ class S2RExperiment(World):
 
     def _set_up_exp3(self, num_obsts):
         # random target without obstacles, sometimes the barriers appear to constrict the target onto the table
-        if np.random.random() < 0.35: 
+        if np.random.random() < 0:
             # set up the barrier boxes
             self.specific_obstacles[3].move_base(np.array([0.3, -0.55, 0.25]))
             self.specific_obstacles[4].move_base(np.array([-0.55, 0.3, 0.25]))

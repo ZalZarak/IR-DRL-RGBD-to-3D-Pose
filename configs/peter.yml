@@ -1,0 +1,76 @@
+run:
+  algorithm:
+    load_model: True
+    model_path: "./models/weights/PPO_peter_exp1/model_6480000_steps.zip"
+    type: "PPO"
+    config:
+      gamma: 0.995
+      n_steps: 1024
+      ent_coef: 0.008
+      batch_size: 24576
+    custom_policy:
+      activation_function: "tanh"
+      value_function:
+        - 256
+        - 256
+      policy_function:
+        - 256
+        - 256
+  train:
+    num_envs : 24
+    logging: 0
+    timesteps: 15000000
+    save_freq : 90000
+    save_folder: "./models/weights"
+    save_name: "peter"
+  eval:
+    max_episodes: -1
+    logging: 1
+    display_delay: 0.00816666666
+    show_world_aux: True
+    show_goal_aux: True
+    show_sensor_aux: True
+
+env:
+  max_steps_per_episode: 1024
+  stat_buffer_size: 25
+  normalize_observations: False
+  normalize_rewards: False
+  use_physics_sim: True
+  gravity: [0, 0, -9.8]
+  sim_step: 0.00416666666
+  sim_steps_per_env_step: 1
+  robots:
+    - type: "UR5"
+      report_joint_velocities: True
+      config:
+        name: "ur5_1"
+        base_position: [0, 0, 0.01]
+        base_orientation: [0, 0, -180]
+        resting_angles: [-180, -45, -90, -135, 90, 0]
+        control_mode: 2
+        self_collision: True
+        controlled_joints: ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint"]
+      goal:
+        type: "PeterGoal"
+        config:
+          add_to_logging: False
+          continue_after_success: True
+          add_to_observation_space: True
+          target_size_eval: 0.18
+          reward_success: 100.
+          reward_collision: -100.
+          reward_timeout: -50.
+          delta_dif_target_size: 0.1
+          d_ref: 0.2
+          p: 8
+          c1: 1.
+          c2: 0.1
+          c3: 0
+  world:
+    type: "PeterWorld"
+    config:
+      target_size_max: 0.5
+      target_size_min: 0.1
+      target_size_divisor: 1.05
+      target_size_success_threshold: 0.95

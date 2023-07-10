@@ -1,6 +1,7 @@
 from .world_implementations import *
 from .world import World
 from .world_implementations.peter_test_world import PeterTestWorld
+from .world_implementations.peter_world import PeterWorld
 
 
 class WorldRegistry:
@@ -32,3 +33,4 @@ WorldRegistry.register('PlateExperiment')(PlateExperiment)
 WorldRegistry.register('S2RExperiment')(S2RExperiment)
 WorldRegistry.register('S2RExperimentVoxels')(S2RExperimentVoxels)
 WorldRegistry.register("PeterTestWorld")(PeterTestWorld)
+WorldRegistry.register("PeterWorld")(PeterWorld)

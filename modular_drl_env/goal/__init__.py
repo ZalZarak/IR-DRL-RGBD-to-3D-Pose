@@ -1,5 +1,6 @@
 from .goal_implementations import *
 from .goal import Goal
+from .goal_implementations.peter_goal import PeterGoal
 from .goal_implementations.peter_test_goal import PeterTestGoal
 
 
@@ -29,3 +30,4 @@ GoalRegistry.register('PositionCollisionNoShakingProximity')(PositionCollisionGo
 GoalRegistry.register('PositionCollisionNoShakingProximityV2')(PositionCollisionGoalNoShakingProximityV2)
 GoalRegistry.register('PositionCollisionNoShakingProximityV3')(PositionCollisionGoalNoShakingProximityV3)
 GoalRegistry.register('PeterTestGoal')(PeterTestGoal)
+GoalRegistry.register('PeterGoal')(PeterGoal)

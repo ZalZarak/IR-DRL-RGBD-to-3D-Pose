@@ -4,7 +4,7 @@ run:
     model_path: ""  
     type: "PPO"
   train:
-    num_envs : 24  
+    num_envs : 24
     logging: 0
     timesteps: 150000000 
     save_freq : 90000
