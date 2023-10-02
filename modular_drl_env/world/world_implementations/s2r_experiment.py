@@ -28,7 +28,8 @@ class S2RExperiment(World):
                  assets_path: str,
                  experiments: list=[],
                  experiments_weights: list=[],
-                 max_num_obstacles: int=3):
+                 max_num_obstacles: int=3,
+                 deterministic: bool=False):
         super().__init__([-2, 2, -2, 2, -1, 5], sim_step, sim_steps_per_env_step, env_id, assets_path)
 
         # experiments, empty list = all available ones
@@ -43,7 +44,9 @@ class S2RExperiment(World):
 
         # measurements for random obstacles
         self.box_low = np.array([0.025, 0.025, 0.025])
+        #self.box_low = np.array([0.085, 0.085, 0.085])
         self.box_high = np.array([0.055, 0.055, 0.055])
+        #self.box_high = np.array([0.085, 0.085, 0.085])
         self.sphere_low = 0.01
         self.sphere_high = 0.025
 
@@ -52,6 +55,9 @@ class S2RExperiment(World):
 
         # storage array for specific geometry with defined sizes
         self.specific_obstacles = []
+
+        # if this flag is set to true, the random generators used to mix up the experiments will always create the same setups
+        self.deterministic = deterministic
 
     def set_up(self):
         # ground plate
@@ -64,20 +70,26 @@ class S2RExperiment(World):
 
         # pre-generate necessary geometry
         #   stuff with specific dims
-        halfExtents = [0.1, 0.3, 0.1]
-        lengthy_box = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, halfExtents, [0.75, 0.2, 0.1, 1])
+        lengthy_box = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.1, 0.3, 0.1], [0.75, 0.2, 0.1, 1])
         lengthy_box.build()
-        halfExtents = [0.6, 0.1, 0.4]
-        barrier_box_1 = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, halfExtents, [0.2, 0.1, 0.75, 1])
+        barrier_box_1 = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.6, 0.1, 0.4], [0.2, 0.1, 0.75, 1])
         barrier_box_1.build()
-        halfExtents = [0.1, 0.6, 0.4]
-        barrier_box_2 = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, halfExtents, [0.2, 0.1, 0.75, 1])
+        barrier_box_2 = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.1, 0.6, 0.4], [0.2, 0.1, 0.75, 1])
         barrier_box_2.build()
-        halfExtents = [0.115, 0.0009, 0.115]
-        somewhat_large_plate = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, halfExtents, [0.294, 0, 0.51, 1])
+        barrier_box_3 = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.6, 0.1, 0.4], [0.2, 0.1, 0.75, 1])
+        barrier_box_4 = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.1, 0.6, 0.4], [0.2, 0.1, 0.75, 1])
+        barrier_box_3.build()
+        barrier_box_4.build()
+        turtle_bot_box = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.125, 0.125, 0.10], [0.2, 0.1, 0.75, 1])
+        turtle_bot_box.build()
+        other_box = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.12, 0.06, 0.16] , [0.2, 0.1, 0.75, 1])
+        other_box.build()
+        somewhat_large_plate = Box(self.storage_pos, np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.115, 0.0009, 0.115] , [0.294, 0, 0.51, 1])
         somewhat_large_plate.build()
         
-        self.specific_obstacles += [self.ground_plate, self.table, lengthy_box, barrier_box_1, barrier_box_2, somewhat_large_plate]
+        self.specific_obstacles += [self.ground_plate, self.table, lengthy_box, barrier_box_1, barrier_box_2, somewhat_large_plate, barrier_box_3, barrier_box_4, turtle_bot_box, other_box]
+        if self.deterministic:
+            np.random.seed(0)
         #   random shapes
         for _ in range(self.max_num_obstacles * self.generation_mult):
             if np.random.random() > 0.3:  # 70% for box
@@ -110,26 +122,29 @@ class S2RExperiment(World):
         eval("self._set_up_exp" + str(experiment) + "(num_obsts)")
 
     def _set_up_exp0(self, num_obsts):
+        if self.deterministic:
+            np.random.seed(0)
         # move the end effector in a straight line across the table, obstacles might appear on the line or close to it, 
         while True:
             random_x = np.random.uniform(low=0.25, high=0.5)
+            random_x_offset = np.random.uniform(low=-0.15, high=0.15)
             random_z = np.random.uniform(low=0.25, high=0.5)
+            random_z_offset = np.random.uniform(low=-0.15, high=0.15)
             random_start_end = choice([(0.05, 0.55), (0.55, 0.05)])
-            #random_start_end = choice([(0.45, -0.181)])
             start_pos = np.array([random_x, random_start_end[0], random_z])
-            end_pos = np.array([random_x, random_start_end[1], random_z])  # straight line across the table along the y axis
+            end_pos = np.array([random_x + random_x_offset, random_start_end[1], random_z + random_z_offset])  # straight line across the table along the y axis
             diff = end_pos - start_pos
             random_obsts = sample(self.obstacle_objects, num_obsts)
 
 
             for obst in random_obsts:
-                waylength = np.random.uniform(low=0.3, high=0.85)
+                waylength = np.random.uniform(low=0.3, high=0.8)
                 random_pos = start_pos + waylength * diff
                 if np.random.random() > 0.5:  # 50% of obstacles will be moving around
                     # generate random trajectory of random velocity and directions
-                    random_vel = np.random.uniform(low=0.5, high=2)
+                    random_vel = np.random.uniform(low=0.35, high=0.65)
                     traj = []
-                    for _ in range(round(np.random.uniform(low=1, high=3))):
+                    for _ in range(round(np.random.uniform(low=2, high=3))):
                         random_dir = np.random.uniform(low=-1, high=1, size=(3,))
                         random_dir = (random_dir * np.random.uniform(low=0.05, high=0.2)) / np.linalg.norm(random_dir)
                         traj.append(random_dir)
@@ -154,39 +169,48 @@ class S2RExperiment(World):
         # if we get here, all is good to go
         self.active_objects += random_obsts
         # with 70% chance set up barriers to prevent the robot from abusing the free space behind it
-        if np.random.random() > 0.3: 
+        if np.random.random() > 1: 
             # set up the barrier boxes
             self.specific_obstacles[3].move_base(np.array([0.3, -0.55, 0.25]))
             self.specific_obstacles[4].move_base(np.array([-0.55, 0.3, 0.25]))
             self.active_objects += [self.specific_obstacles[3], self.specific_obstacles[4]]
         self.position_targets = [end_pos]
+        #self.joints_targets = [np.array([1.09, -0.992, 1.058, -0.694, -2.612, 0])[self.robots[0].indices_controlled]]
         # TODO: joint targets
 
     def _set_up_exp1(self, num_obsts):
+        if self.deterministic:
+            np.random.seed(0)
         self.robots[0].moveto_joints(self.robots[0].resting_pose_angles, False)
         obst = self.specific_obstacles[2]
         random_y_start = np.random.uniform(low=0, high=0.3)
         random_z_start = np.random.uniform(low=0.25, high=0.4)
         obst.move_base(np.array([0.4, random_y_start, random_z_start]))
-        obst.move_step = 0.35 * self.sim_step * self.sim_steps_per_env_step
-        obst.trajectory = [np.array([0, 0.4 - random_y_start, 0.0]), np.array([0, -random_y_start, 0])]
+        obst.move_step = 0.5 * self.sim_step * self.sim_steps_per_env_step
+        obst.trajectory = [np.array([0, 1.1 - random_y_start, 0.0]), np.array([0, -random_y_start, 0])]
+        shuffle(obst.trajectory)
         self.active_objects += [obst]
-        targets = [np.array([0.55, 0.0, random_z_start]), np.array([0.4, -0.05, random_z_start]), np.array([0.4, 0.41, random_z_start])]
+        targets = [np.array([0.55, np.random.uniform(low=0, high=0.3), random_z_start]), np.array([0.4, np.random.uniform(low=0, high=0.3), random_z_start]), np.array([0.4, 0.41, random_z_start])]
         self.position_targets = [choice(targets)]
 
     def _set_up_exp2(self, num_obsts):
+        if self.deterministic:
+            np.random.seed(0)
         self.robots[0].moveto_joints(self.robots[0].resting_pose_angles, False)
         obst = self.specific_obstacles[2]
         random_y_start = np.random.uniform(low=0, high=0.3)
         random_z_start = np.random.uniform(low=0.1, high=0.4)
         obst.move_base(np.array([0.4, random_y_start, random_z_start]))
         obst.move_step = 0.35 * self.sim_step * self.sim_steps_per_env_step
-        obst.trajectory = [np.array([0, 0, 0.4 - random_z_start]), np.array([0, 0, -random_z_start])]
+        obst.trajectory = [np.array([0, 0, 0.8 - random_z_start]), np.array([0, 0, -random_z_start])]
+        shuffle(obst.trajectory)
         self.active_objects += [obst]
         targets = [np.array([0.4, random_y_start, 0.25]), np.array([0.4, random_y_start, 0.45]), np.array([0.55, random_y_start, 0.25]), np.array([0.55, random_y_start, 0.45])]
         self.position_targets = [choice(targets)]
 
     def _set_up_exp3(self, num_obsts):
+        if self.deterministic:
+            np.random.seed(0)
         # random target without obstacles, sometimes the barriers appear to constrict the target onto the table
         if np.random.random() < 0:
             # set up the barrier boxes
@@ -204,9 +228,15 @@ class S2RExperiment(World):
         self.position_targets = [np.random.uniform(low=[0, 0, 0.15], high=[0.7, 0.7, 0.7], size=(3,))]
 
     def _set_up_exp4(self, num_obsts):
-        pyb_u.toggle_rendering(True)
         # move in a random line with a somewhat obstructive plate somewhere in between
         # the plate moves in rare cases
+        # NOTE: apparently, in rare cases the code below creates an endless loop the reason for which I can't find out
+        # it appears so rarely that it stopped two long term training ops after 10 hours of training, but when I tried to replicate it
+        # by running only this setup in debug for about 2 hours on repeat, it never happened
+        # keep this in mind
+        if self.deterministic:
+            np.random.seed(0)
+        
 
         # set up the barrier boxes, this prevents the agent from learning that it can simply perform a wide swing
         self.specific_obstacles[3].move_base(np.array([0.3, -0.55, 0.25]))
@@ -215,10 +245,14 @@ class S2RExperiment(World):
 
         # loop, exits once a valid starting setup is found
         while True:
-            low = [0, 0, 0.1]
+            low = [0.1, 0.1, 0.1]
             high = [0.8, 0.8, 0.6]
             # find a good starting point
+            tries = 0
             while True:
+                tries += 1
+                if tries > 100:
+                    break
                 random_start = np.random.uniform(low=low, high=high, size=(3,))
                 if np.linalg.norm(random_start) < 0.25 or np.linalg.norm(random_start) > 1.5:
                     continue  # distance to robot base is too small or too far away
@@ -229,8 +263,14 @@ class S2RExperiment(World):
                 if pyb_u.collision:
                     continue  # point is in collision
                 break  # exit this loop once a good point is found
+            if tries > 100:
+                continue
             # now generate a random goal
+            tries = 0
             while True:
+                tries += 1
+                if tries > 100:
+                    break
                 random_direction = np.random.uniform(low=[-1, -1, -0.3], high=[1, 1, 0.3], size=(3,)) 
                 random_length = np.random.uniform(low=0.15, high=0.65)
                 random_goal = random_start + (random_direction * random_length / np.linalg.norm(random_direction))
@@ -244,6 +284,8 @@ class S2RExperiment(World):
                 if np.linalg.norm(position_goal) > 1.5 or np.linalg.norm(position_goal - random_goal) > 5e-2 or pyb_u.collision:
                     continue
                 break
+            if tries > 100:
+                continue
             # now we can set a plate between the two points
             # now loop and search for a position until it doesn't collide with the robot
             plate = self.specific_obstacles[5]
@@ -278,6 +320,72 @@ class S2RExperiment(World):
 
         self.active_objects += [plate]
         self.position_targets = [position_goal]
+
+    def _set_up_exp5(self, num_obsts):
+        # movement to a point in free space along a largely unobstructed path, obstacles in the background
+        # serves as test scenario against RRT
+
+        # set up barriers around the table
+        self.specific_obstacles[3].move_base(np.array([0.3, -0.55, 0.25]))
+        self.specific_obstacles[4].move_base(np.array([-0.55, 0.3, 0.25]))
+        self.specific_obstacles[6].move_base(np.array([0.3, 0.85, 0.25]))
+        self.specific_obstacles[7].move_base(np.array([0.85, 0.3, 0.25]))
+        self.active_objects += [self.specific_obstacles[3], self.specific_obstacles[4], self.specific_obstacles[6], self.specific_obstacles[7]]
+
+        val = False
+        while not val:
+            val = self._create_ee_starting_points(self.robots,)
+            # if not val:
+            #     continue
+            #val = self._create_position_and_rotation_targets(self.robots)
+        self.position_targets = [np.random.uniform(low=[0, 0, 0.15], high=[0.65, 0.65, 0.5], size=(3,))]
+        self.robots[0].moveto_joints(self.ee_starting_points[0][2], False)
+
+    def _set_up_exp6(self, num_obsts):
+        # movement to a point in free space along a largely unobstructed path, obstacles in the background
+        # serves as test scenario against RRT
+
+        # set up barriers around the table
+        self.specific_obstacles[8].move_base(np.array([0.525, 0.425, 0.1]))
+        self.specific_obstacles[9].move_base(np.array([0.425, 0.0, 0.55]))
+        self.active_objects += [self.specific_obstacles[8], self.specific_obstacles[9]]
+
+        val = False
+        while not val:
+            val = self._create_ee_starting_points(self.robots,)
+            # if not val:
+            #     continue
+            #val = self._create_position_and_rotation_targets(self.robots)
+        self.position_targets = [np.random.uniform(low=[0, 0.15, 0.25], high=[0.65, 0.65, 0.55], size=(3,))]
+        self.position_targets = [np.array([0.46117666, 0.46788782, 0.5519129 ])]
+        self.robots[0].moveto_xyz(self.position_targets[0], False)
+        joints, _ = pyb_u.get_joint_states(self.robots[0].object_id, self.robots[0].controlled_joints_ids)
+        self.joints_targets = [joints]
+        self.robots[0].moveto_joints(self.ee_starting_points[0][2], False)
+        self.robots[0].moveto_joints(self.robots[0].resting_pose_angles, False)
+
+    def _set_up_exp7(self, num_obsts):
+        # harcoded, quite hard target, should probably not appear in training
+        # this serves to highlight the tradeoff with a global planner like RRT
+
+        # set up barriers around the table
+        self.specific_obstacles[8].move_base(np.array([0.525, 0.425, 0.1]))
+        self.specific_obstacles[9].move_base(np.array([0.425, 0.0, 0.55]))
+        self.active_objects += [self.specific_obstacles[8], self.specific_obstacles[9]]
+
+        val = False
+        while not val:
+            val = self._create_ee_starting_points(self.robots,)
+            # if not val:
+            #     continue
+            #val = self._create_position_and_rotation_targets(self.robots)
+        self.position_targets = [np.array([0.4, 0.0, 0.2])]
+        self.joints_targets = [np.array([-2.51, -1.587, -2.513, -0.761, 0, 0])[self.robots[0].indices_controlled]]  # only puts the indices of the 6 joints into the actual target which are activated in the config
+
+        #self.robots[0].moveto_joints(self.ee_starting_points[0][2], False)
+        self.robots[0].moveto_joints(self.robots[0].resting_pose_angles, False)
+        
+
 
     def update(self):
         for obstacle in self.active_objects:
