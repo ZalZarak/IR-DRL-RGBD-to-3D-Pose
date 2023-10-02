@@ -4,6 +4,7 @@ import numpy as np
 
 from modular_drl_env.world import World
 from modular_drl_env.world.obstacles.ground_plate import GroundPlate
+from modular_drl_env.world.obstacles.human import Human
 from modular_drl_env.world.obstacles.shapes import Box
 
 
@@ -20,6 +21,7 @@ class PeterWorld(World):
         self.table: Box = None
         self.target_max_distance = 0.8
         self.target_size = target_size_max
+        self.human: Human = None
 
     def set_up(self):
         self.ground_plate = GroundPlate(False)
@@ -29,6 +31,9 @@ class PeterWorld(World):
         # add the table the robot is standing on
         self.table = Box(np.array([0.25, 0.25, -0.5]), np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.3, 0.3, 0.5], seen_by_obstacle_sensor=False)
         self.table.build()
+
+        self.human = Human(position=[-1, -1, 0], rotation=[0, 0, 0, 1], trajectory=[0], sim_step=self.sim_step, thresh=0.1)
+        self.human.build()
 
     def reset(self, success_rate: float):
         def generate_random_point_in_sphere(radius):
