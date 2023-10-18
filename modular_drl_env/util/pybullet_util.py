@@ -132,7 +132,8 @@ class pybullet_util:
         return name
     
     @classmethod
-    def create_box(cls, position: np.ndarray, orientation: np.ndarray, mass: float, halfExtents: List[float]=[1, 1, 1], color: List[float]=[0.5, 0.5, 0.5, 1], collision: bool=True) -> str:
+    def create_box(cls, position: np.ndarray, orientation: np.ndarray, mass: float, halfExtents: List[float]=[1, 1, 1], color: List[float]=[0.5, 0.5, 0.5, 1], collision: bool=True,
+                   ret_pyb_id=False) -> str:
         """
         Creates a box and returns its string id.
         """
@@ -145,10 +146,11 @@ class pybullet_util:
         cls.pybullet_object_ids[name] = pyb_id
         cls.gym_env_str_names[pyb_id] = name
         cls.spawn_counter += 1
-        return name
+        return pyb_id if ret_pyb_id else name
     
     @classmethod
-    def create_sphere(cls, position: np.ndarray, mass: float, radius: float, color: List[float]=[0.5, 0.5, 0.5, 1], collision: bool=True) -> str:
+    def create_sphere(cls, position: np.ndarray, mass: float, radius: float, color: List[float]=[0.5, 0.5, 0.5, 1], collision: bool=True,
+                      ret_pyb_id=False) -> str:
         """
         Creates a sphere and returns its string id.
         """
@@ -160,10 +162,11 @@ class pybullet_util:
         cls.pybullet_object_ids[name] = pyb_id
         cls.gym_env_str_names[pyb_id] = name
         cls.spawn_counter += 1
-        return name
+        return pyb_id if ret_pyb_id else name
     
     @classmethod
-    def create_cylinder(cls, position: np.ndarray, orientation: np.ndarray, mass: float, radius: float, height:float, color: List[float]=[0.5, 0.5, 0.5, 1], collision: bool=True) -> str:
+    def create_cylinder(cls, position: np.ndarray, orientation: np.ndarray, mass: float, radius: float, height:float, color: List[float]=[0.5, 0.5, 0.5, 1], collision: bool=True,
+                        ret_pyb_id=False) -> str:
         """
         Creates a cylinder and returns its string id.
         """
@@ -176,7 +179,7 @@ class pybullet_util:
         cls.pybullet_object_ids[name] = pyb_id
         cls.gym_env_str_names[pyb_id] = name
         cls.spawn_counter += 1
-        return name
+        return pyb_id if ret_pyb_id else name
     
     @classmethod
     def remove_object(cls, object_id: str) -> None:

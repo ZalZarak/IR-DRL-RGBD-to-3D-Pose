@@ -19,11 +19,12 @@ class Sphere(Obstacle):
         self.radius = radius
         self.color = color
 
-    def build(self) -> int:
+    def build(self, ret_pyb_id=False) -> int:
         self.object_id = pyb_u.create_sphere(position=self.position_orig,
                                              mass=0,
                                              radius=self.radius,
-                                             color=self.color)
+                                             color=self.color,
+                                             ret_pyb_id=ret_pyb_id)
         return self.object_id
 
 class Box(Obstacle):
@@ -43,12 +44,13 @@ class Box(Obstacle):
         self.color = color
         self.halfExtents = halfExtents
 
-    def build(self) -> int:
+    def build(self, ret_pyb_id=False) -> int:
         self.object_id = pyb_u.create_box(position=self.position_orig,
                                           orientation=self.orientation_orig,
                                           mass=0,
                                           halfExtents=self.halfExtents,
-                                          color=self.color)
+                                          color=self.color,
+                                          ret_pyb_id=ret_pyb_id)
         return self.object_id
 
 class Cylinder(Obstacle):
@@ -70,11 +72,12 @@ class Cylinder(Obstacle):
         self.color = color
         self.height = height
 
-    def build(self) -> int:
+    def build(self, ret_pyb_id=False) -> int:
         self.object_id = pyb_u.create_cylinder(position=self.position_orig,
                                                orientation=self.orientation_orig,
                                                mass=0,
                                                radius=self.radius,
                                                height=self.height,
-                                               color=self.color)
+                                               color=self.color,
+                                               ret_pyb_id=ret_pyb_id)
         return self.object_id
