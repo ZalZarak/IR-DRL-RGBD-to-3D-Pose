@@ -18,13 +18,25 @@ class PeterTestWorld(World):
         self.ground_plate.build()
         self.ground_plate.move_base(np.array([0, 0, -1]))
 
-        self.table = Box(np.array([0.25, 0.25, -0.5]), np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.3, 0.3, 0.5], seen_by_obstacle_sensor=True)
+        self.table = Box(np.array([0.25, 0.25, -0.5]), np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.3, 0.3, 0.5], seen_by_obstacle_sensor=False)
         self.table.build()
 
         self.sim = Simulator(**config["Simulator"])
         # self.sim = SimulatorAdjusted(**config["Simulator"], sim_step=self.sim_step, sim_step_per_env_step=self.sim_steps_per_env_step)
         self.t = time.time()
         self.t_update = self.t
+
+        # add to pyb_u since objects were created outside of it.
+        joint_map_rev = {v: k for k, v in config["Simulator"]["joint_map"].items()}
+        for op_ids, p_id in self.sim.limbs_pb.items():
+            if len(op_ids) == 1:
+                pyb_u.pybullet_object_ids[joint_map_rev[op_ids[0]]] = p_id
+                pyb_u.gym_env_str_names[p_id] = joint_map_rev[op_ids[0]]
+            else:
+                op_id_min, op_id_max = sorted(op_ids)
+                name = f"{joint_map_rev[op_id_min]}-{joint_map_rev[op_id_max]}"
+                pyb_u.pybullet_object_ids[name] = p_id
+                pyb_u.gym_env_str_names[p_id] = name
 
 
 
@@ -33,9 +45,10 @@ class PeterTestWorld(World):
         pass
 
     def update(self):
-        pass
-        self.sim.process_frame_at_time(time.time() - self.t)
-        # self.sim.process_frame_sync()
+        if self.sim.playback:
+            self.sim.process_frame_at_time(time.time() - self.t)
+        else:
+            self.sim.process_frame_sync()
         """update_delta = 1/4
         if time.time() - self.t_update >= update_delta:
             self.t_update = time.time()
