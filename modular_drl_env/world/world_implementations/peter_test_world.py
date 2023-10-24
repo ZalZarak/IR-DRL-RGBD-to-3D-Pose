@@ -1,3 +1,4 @@
+import random
 import sys
 sys.path.append("modular_drl_env/RGBDto3Dpose")
 import time
@@ -22,9 +23,7 @@ class PeterTestWorld(World):
         self.table.build()
 
         self.sim = Simulator(**config["Simulator"])
-        # self.sim = SimulatorAdjusted(**config["Simulator"], sim_step=self.sim_step, sim_step_per_env_step=self.sim_steps_per_env_step)
         self.t = time.time()
-        self.t_update = self.t
 
         # add to pyb_u since objects were created outside of it.
         joint_map_rev = {v: k for k, v in config["Simulator"]["joint_map"].items()}
@@ -41,15 +40,13 @@ class PeterTestWorld(World):
 
 
     def reset(self, success_rate: float):
-        #self.robot.reset()
-        pass
+        # self.robot.reset()
+        if self.sim.playback:   # random start
+            playback_duration = self.sim.frames[-1][0]
+            self.t = time.time() - random.uniform(0, playback_duration)
 
     def update(self):
         if self.sim.playback:
             self.sim.process_frame_at_time(time.time() - self.t)
         else:
             self.sim.process_frame_sync()
-        """update_delta = 1/4
-        if time.time() - self.t_update >= update_delta:
-            self.t_update = time.time()
-            self.sim.process_frame_at_time(time.time() - self.t)"""
