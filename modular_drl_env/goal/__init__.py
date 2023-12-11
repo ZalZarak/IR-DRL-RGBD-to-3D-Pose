@@ -2,6 +2,7 @@ from .goal_implementations import *
 from .goal import Goal
 from .goal_implementations.peter_goal import PeterGoal
 from .goal_implementations.peter_test_goal import PeterTestGoal
+from modular_drl_env.goal.goal_implementations.human_pose_goal import HumanPoseGoal
 
 
 class GoalRegistry:
@@ -31,3 +32,4 @@ GoalRegistry.register('PositionCollisionNoShakingProximityV2')(PositionCollision
 GoalRegistry.register('PositionCollisionNoShakingProximityV3')(PositionCollisionGoalNoShakingProximityV3)
 GoalRegistry.register('PeterTestGoal')(PeterTestGoal)
 GoalRegistry.register('PeterGoal')(PeterGoal)
+GoalRegistry.register('HumanPoseGoal')(HumanPoseGoal)

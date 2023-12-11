@@ -23,7 +23,7 @@ class PeterTestWorld(World):
         self.table.build()
 
         self.sim = Simulator(**config["Simulator"])
-        self.t = time.time()
+        self.t = 0
 
         # add to pyb_u since objects were created outside of it.
         joint_map_rev = {v: k for k, v in config["Simulator"]["joint_map"].items()}
@@ -37,16 +37,25 @@ class PeterTestWorld(World):
                 pyb_u.pybullet_object_ids[name] = p_id
                 pyb_u.gym_env_str_names[p_id] = name
 
-
-
     def reset(self, success_rate: float):
         # self.robot.reset()
-        if self.sim.playback:   # random start
+        self.t = 0
+        self.start_time = time.time()
+        self.printed = False
+        self.count = 0
+        """if self.sim.playback:   # random start
             playback_duration = self.sim.frames[-1][0]
-            self.t = time.time() - random.uniform(0, playback_duration)
+            self.t = time.time() - random.uniform(0, playback_duration)"""
 
     def update(self):
+        self.t += self.sim_step * self.sim_steps_per_env_step
+        if 10<time.time()-self.start_time and not self.printed:
+            print(f"Time is {round(self.t,2)}")
+            self.printed = True
         if self.sim.playback:
-            self.sim.process_frame_at_time(time.time() - self.t)
+            self.sim.process_frame_at_time(self.t*5)
+            # self.sim.process_frame_at_time((time.time() - self.start_time))
+            # input()
         else:
             self.sim.process_frame_sync()
+        # TODO: make invalid limbs invisible to obstacle sensor and vice versa.

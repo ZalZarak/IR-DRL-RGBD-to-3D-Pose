@@ -17,12 +17,12 @@ run:
         - 256
         - 256
   train:
-    num_envs : 24
+    num_envs : 1
     logging: 0
     timesteps: 15000000
     save_freq : 90000
     save_folder: "./models/weights"
-    save_name: "peter"
+    save_name: "peter_rgbdto3dpose"
   eval:
     max_episodes: -1
     logging: 1

@@ -37,7 +37,7 @@ def f_joint_limit_reward(x):
 
 
 class PeterTestGoal(Goal):
-    goal_size = 0.5
+    goal_size = 0.1
     dirac = 0.6
 
 
@@ -47,7 +47,7 @@ class PeterTestGoal(Goal):
         ret["ee_position"] = Box(low=-50, high=50, shape=(3,), dtype=np.float32)
         ret["difference_goal"] = Box(low=-50, high=50, shape=(3,), dtype=np.float32)
         ret["distance_goal"] = Box(low=-3, high=3, shape=(1,), dtype=np.float32)
-        ret["joints"] = Box(low=-50, high=50, shape=(24, 3), dtype=np.float32)
+        #ret["joints"] = Box(low=-50, high=50, shape=(24, 3), dtype=np.float32)
         return ret
 
     def get_observation(self) -> dict:
@@ -60,10 +60,10 @@ class PeterTestGoal(Goal):
         ret["ee_position"] = self.position
         ret["difference_goal"] = dif
         ret["distance_goal"] = np.array([self.distance])
-        try:
+        """try:
             ret["joints"] = self.robot.world.sim.joints[:25, :].copy()
         except AttributeError:
-            ret["joints"] = np.zeros([24, 3])
+            ret["joints"] = np.zeros([24, 3])"""
         return ret
 
     """def reward(self, step, action) -> Tuple[float, bool, bool, bool, bool]:
@@ -141,6 +141,7 @@ class PeterTestGoal(Goal):
     def on_env_reset(self, success_rate):
 
         def update_dirac(self):
+            # FIXME self.dirac?
             self.delta = self.goal_size + 0.1
 
         def generate_random_point_in_sphere(radius):

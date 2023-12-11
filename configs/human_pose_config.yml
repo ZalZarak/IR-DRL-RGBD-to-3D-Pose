@@ -1,0 +1,78 @@
+run:
+  algorithm:
+    load_model: False
+    model_path: "./models/weights/PPO_humanpose_test1/model_432000_steps.zip"
+    type: "PPO"
+    config:
+      gamma: 0.995
+      n_steps: 1024
+      ent_coef: 0.008 #TODO: beim nächsten Training rauskommentieren oder auf 0 setzen
+      batch_size: 24576
+    custom_policy:
+      activation_function: "tanh"
+      value_function:
+        #- 256
+        #- 256
+        - 128
+        - 128
+        - 128
+        - 128
+        - 128
+      policy_function:
+        #- 256
+        #- 256
+        - 128
+        - 128
+        - 128
+        - 128
+        - 128
+
+  train:
+    num_envs : 24
+    logging: 0
+    timesteps: 150000000
+    save_freq : 9000
+    save_folder: "./models/weights"
+    save_name: "humanpose_test1"
+  eval:
+    max_episodes: -1
+    logging: 0 #1 = nach jeder episode eine zeile in die console, 2 = jeder step als zeile in der csv, 3 = das selbe wie 2 aber mit obstacles
+    display_delay: 0.00816666666
+    show_world_aux: True
+    show_goal_aux: True
+    show_sensor_aux: False # Zeigt linien mit Abstand zu obstacles, führt zu warnmeldung debug draw failed
+
+env:
+  max_steps_per_episode: 1024
+  stat_buffer_size: 25
+  normalize_observations: False
+  normalize_rewards: False
+  use_physics_sim: True
+  gravity: [0, 0, -9.8]
+  sim_step: 0.00416666666
+  sim_steps_per_env_step: 1
+  robots:
+    - type: "UR5_Gripper"
+      config:
+        name: "ur5_1"
+        base_position: [0, 0, 0.01]
+        base_orientation: [0, 0, -180]
+        resting_angles: [-180, -45, -90, -135, 90, 0]
+        control_mode: 2 #0 = 6er vektor (x,y,z,r,p,y), 1 = joint angles direct len vektor = anzahl roboter joints oder eingabe bei control_joints (siehe unten), 2= joint velocities
+        self_collision: True
+        controlled_joints: ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint"]
+      goal:
+        type: "HumanPoseGoal"
+        config:
+          add_to_logging: True
+          continue_after_success: False
+          dist_threshold_start: 0.4
+          dist_threshold_end : 0.05
+          dist_threshold_increment_start: 0.01
+          dist_threshold_increment_end: 0.001
+          d_min: 0.08
+          reward_success: 150
+  world:
+    type: "PeterTestWorld"
+    config:
+      workspace_boundaries: [-2, 2, -2, 2, -1, 5]
