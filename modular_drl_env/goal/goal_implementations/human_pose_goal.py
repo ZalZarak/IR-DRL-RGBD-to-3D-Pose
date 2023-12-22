@@ -116,7 +116,7 @@ class HumanPoseGoal(Goal):
         self.timeout = False
 
         if self.collided:
-            self.done = True
+            # self.done = True
             reward = self.reward_collision
         elif goal_distance < self.distance_threshold:
             self.done = True
@@ -159,7 +159,7 @@ class HumanPoseGoal(Goal):
         if not hasattr(self, "sphere"):
             self.sphere = pyb_u.create_sphere(position=np.zeros([3]), mass=0, radius=self.distance_threshold, color=[0, 1, 0, 0.65],
                                               collision=False)
-            pyb_u.create_sphere(position=np.zeros([3]), mass=0, radius=0.2, color=[1, 1, 0, 1],
+            pyb_u.create_sphere(position=np.zeros([3]), mass=0, radius=0.1, color=[1, 1, 0, 0.5],
                                 collision=False)
         self.target_position = generate_random_point_on_circle(0.5)
         pyb_u.set_base_pos_and_ori(self.sphere, self.target_position, np.ones([4]))

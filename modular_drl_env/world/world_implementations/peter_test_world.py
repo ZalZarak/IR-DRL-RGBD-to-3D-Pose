@@ -17,13 +17,15 @@ class PeterTestWorld(World):
     def set_up(self):
         self.ground_plate = GroundPlate(False)
         self.ground_plate.build()
-        self.ground_plate.move_base(np.array([0, 0, -1]))
+        self.ground_plate.move_base(np.array([0, 0, -0.75]))
 
-        self.table = Box(np.array([0.25, 0.25, -0.5]), np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.3, 0.3, 0.5], seen_by_obstacle_sensor=False)
+        self.table = Box(np.array([0.35, 0.583, -0.375]), np.array([0, 0, 0, 1]), [], self.sim_step, self.sim_steps_per_env_step, 0, [0.415, 0.648, 0.375], seen_by_obstacle_sensor=False)
         self.table.build()
 
         self.sim = Simulator(**config["Simulator"])
         self.t = 0
+
+        self.start_time = time.time()
 
         # add to pyb_u since objects were created outside of it.
         joint_map_rev = {v: k for k, v in config["Simulator"]["joint_map"].items()}
@@ -40,7 +42,7 @@ class PeterTestWorld(World):
     def reset(self, success_rate: float):
         # self.robot.reset()
         self.t = 0
-        self.start_time = time.time()
+        # self.start_time = time.time()
         self.printed = False
         self.count = 0
         """if self.sim.playback:   # random start
@@ -53,8 +55,8 @@ class PeterTestWorld(World):
             print(f"Time is {round(self.t,2)}")
             self.printed = True
         if self.sim.playback:
-            self.sim.process_frame_at_time(self.t*5)
-            # self.sim.process_frame_at_time((time.time() - self.start_time))
+            # self.sim.process_frame_at_time(self.t*5)
+            self.sim.process_frame_at_time((time.time() - self.start_time)*10)
             # input()
         else:
             self.sim.process_frame_sync()
