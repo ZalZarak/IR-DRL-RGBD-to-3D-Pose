@@ -1,5 +1,7 @@
 from .goal_implementations import *
 from .goal import Goal
+from .goal_implementations.human_pose_goal import HumanPoseGoal2, HumanPoseGoal
+from .goal_implementations.peter_test_goal import PeterTestGoal
 
 
 class GoalRegistry:
@@ -27,3 +29,6 @@ GoalRegistry.register('PositionCollisionNoShaking')(PositionCollisionGoalNoShaki
 GoalRegistry.register('PositionCollisionNoShakingProximity')(PositionCollisionGoalNoShakingProximity)
 GoalRegistry.register('PositionCollisionNoShakingProximityV2')(PositionCollisionGoalNoShakingProximityV2)
 GoalRegistry.register('PositionCollisionNoShakingProximityV3')(PositionCollisionGoalNoShakingProximityV3)
+GoalRegistry.register("PeterTestGoal")(PeterTestGoal)
+GoalRegistry.register('HumanPoseGoal2')(HumanPoseGoal2)
+GoalRegistry.register('HumanPoseGoal')(HumanPoseGoal)

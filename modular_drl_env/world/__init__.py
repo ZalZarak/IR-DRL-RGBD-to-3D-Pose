@@ -1,5 +1,7 @@
 from .world_implementations import *
 from .world import World
+from .world_implementations.human_pose_world import HumanPoseWorld2, HumanPoseWorld
+
 
 class WorldRegistry:
     _world_classes = {}
@@ -29,3 +31,5 @@ WorldRegistry.register('AvoidObstacle')(AvoidObstacle)
 WorldRegistry.register('PlateExperiment')(PlateExperiment)
 WorldRegistry.register('S2RExperiment')(S2RExperiment)
 WorldRegistry.register('S2RExperimentVoxels')(S2RExperimentVoxels)
+WorldRegistry.register('HumanPoseWorld2')(HumanPoseWorld2)
+WorldRegistry.register('HumanPoseWorld')(HumanPoseWorld)
