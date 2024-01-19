@@ -1,0 +1,3 @@
+[submodule "modular_drl_env/RGBDto3Dpose"]
+	path = modular_drl_env/RGBDto3Dpose
+	url = https://github.com/ZalZarak/RGBD-to-3D-Pose.git
