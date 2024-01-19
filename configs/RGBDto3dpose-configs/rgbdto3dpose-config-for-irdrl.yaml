@@ -1,0 +1,274 @@
+run_from: 1   # Perceptor: 0, Simulator: 1, Debug: 2
+Perceptor:
+  playback: false
+  playback_file: res/test.bag
+  duration: -1
+  countdown: -1
+  # saving
+  savefile_prefix: null
+  save_joints: false
+  save_bag: false
+  save_performance: false
+  # show
+  show_rgb: true
+  show_depth: true
+  show_joints: true
+  show_color_mask: false
+  # simulate
+  simulate_limbs: true
+  simulate_joints: false
+  simulate_joint_connections: false
+  # camera
+  resolution: [640, 480]
+  fps: 30
+  flip: 0
+  translation: [0.26, 0.4, -2.48]
+  rotation: [0, 0, 0]
+  # depth_settings
+  visual_preset: "High Density"
+  exposure: 4000
+  gain: 16
+  laser_power: 360
+  depth_units: 0.0005
+  # post_processing
+  # 0: off (not recommended)
+  # 1: depth to color (test first as described in README "Why does the color stream look so weird?")
+  # 2: color to depth
+  alignment: 2
+  depth2disparity: true
+  spatial_filter: true
+  temporal_filter: true
+  disparity2depth: true
+  hole_filling_filter: -1
+  # validation
+  joint_map:  # do not change, as defined in OpenPose
+    Nose: 0
+    Neck: 1
+    RShoulder: 2
+    RElbow: 3
+    RWrist: 4
+    LShoulder: 5
+    LElbow: 6
+    LWrist: 7
+    MidHip: 8
+    RHip: 9
+    RKnee: 10
+    RAnkle: 11
+    LHip: 12
+    LKnee: 13
+    LAnkle: 14
+    REye: 15
+    LEye: 16
+    REar: 17
+    LEar: 18
+    LBigToe: 19
+    LSmallToe: 20
+    LHeel: 21
+    RBigToe: 22
+    RSmallToe: 23
+    RHeel: 24
+    Background: 25
+  connections_hr: # for all tuples (a,b): a<b
+    - [ 'Nose', 'Neck' ]
+    - [ 'Nose', 'REye' ]
+    - [ 'Nose', 'LEye' ]
+    - [ 'REye', 'REar' ]
+    - [ 'LEye', 'LEar' ]
+    - [ 'Neck', 'RShoulder' ]
+    - [ 'Neck', 'LShoulder' ]
+    - [ 'RShoulder', 'RElbow' ]
+    - [ 'LShoulder', 'LElbow' ]
+    - [ 'RElbow', 'RWrist' ]
+    - [ 'LElbow', 'LWrist' ]
+    - [ 'Neck', 'MidHip' ]
+    - [ 'MidHip', 'RHip' ]
+    - [ 'MidHip', 'LHip' ]
+    - [ 'RHip', 'RKnee' ]
+    - [ 'LHip', 'LKnee' ]
+    - [ 'RKnee', 'RAnkle' ]
+    - [ 'LKnee', 'LAnkle' ]
+    - [ 'RAnkle', 'RBigToe' ]
+    - [ 'LAnkle', 'LBigToe' ]
+  color_validation_joints_hr: [RWrist, LWrist]
+  color_range: [ [0, 70, 0], [109, 255, 23] ]
+  lengths_hr:   # must be: for all 'j1-j2': joint_map[j1] < joint_map[j2]
+    Nose-Neck: [0.18, 0.26]
+    Nose-LEye: [0.04, 0.07]
+    Nose-REye: [0.04, 0.07]
+    LEye-LEar: [0.09, 0.14]  # with this deviation down it will invalidate front view of face but make it robuster to occlusion. If front, eye detection should work
+    REye-REar: [0.09, 0.14]
+    Neck-LShoulder: [0.16, 0.24]
+    Neck-RShoulder: [0.16, 0.24]
+    LShoulder-LElbow: [0.27, 0.34]
+    RShoulder-RElbow: [0.27, 0.34]
+    LElbow-LWrist: [0.26, 0.32]
+    RElbow-RWrist: [0.26 , 0.32]
+    Neck-MidHip: [0.50, 0.63]
+    MidHip-LHip: [0.11, 0.15]
+    MidHip-RHip: [0.11, 0.15]
+    LHip-LKnee: [0.40, 0.49]
+    RHip-RKnee: [0.40, 0.49]
+    LKnee-LAnkle: [0.44, 0.51]
+    RKnee-RAnkle: [0.44, 0.51]
+    LAnkle-LBigToe: [0.15, 0.21]
+    RAnkle-RBigToe: [0.15, 0.21]
+  depth_deviations_hr:  # must be: for all 'j1-j2': joint_map[j1] < joint_map[j2]
+    Nose-Neck: 0.2
+    Nose-LEye: 0.05
+    Nose-REye: 0.05
+    LEye-LEar: 0.07  # with this deviation down it will invalidate front view of face but make it robuster to occlusion. If front, eye detection should work
+    REye-REar: 0.07
+    Neck-LShoulder: 0.17
+    Neck-RShoulder: 0.17
+    LShoulder-LElbow: -1
+    RShoulder-RElbow: -1
+    LElbow-LWrist: -1
+    RElbow-RWrist: -1
+    Neck-MidHip: 0.2
+    MidHip-LHip: 0.09
+    MidHip-RHip: 0.09
+    LHip-LKnee: -1
+    RHip-RKnee: -1
+    LKnee-LAnkle: -1
+    RKnee-RAnkle: -1
+    LAnkle-LBigToe: -1
+    RAnkle-RBigToe: -1
+  search_areas_hr:  # [deviation, skip] in pixels
+    Nose: [8, 1]
+    Neck: [16, 2]
+    RShoulder: [9, 0]
+    RElbow: [9, 0]
+    RWrist: [9, 0]
+    LShoulder: [9, 0]
+    LElbow: [9, 0]
+    LWrist: [9, 0]
+    MidHip: [16, 2]
+    RHip: [8, 3]
+    RKnee: [5, 4]
+    RAnkle: [0, 0]
+    LHip: [8, 3]
+    LKnee: [5, 4]
+    LAnkle: [0, 0]
+    REye: [0, 0]
+    LEye: [0, 0]
+    REar: [0, 0]
+    LEar: [0, 0]
+    LBigToe: [0, 0]
+    LSmallToe: [0, 0]
+    LHeel: [0, 0]
+    RBigToe: [0, 0]
+    RSmallToe: [0, 0]
+    RHeel: [0, 0]
+    Background: [0, 0]
+  joint_3d_transforms: ["estimate_nose_from_head_joints"]
+OpenPoseHandler:
+  # Ubuntu
+  openpose_python_path_ubuntu: "/home/pk/programs/openpose/build/python"
+  model_folder_ubuntu: "/home/pk/programs/openpose/models/"
+  # Windows
+  openpose_python_path_win: "C:/Users/PK/Documents/Uni/Semester 8/BA/openpose/build2/python/openpose/Release/"
+  openpose_release_path_win: "C:/Users/PK/Documents/Uni/Semester 8/BA/openpose/build2/x64/Release"
+  openpose_bin_path_win: "C:/Users/PK/Documents/Uni/Semester 8/BA/openpose/build2/bin"
+  model_folder_win: "C:/Users/PK/Documents/Uni/Semester 8/BA/openpose/models"
+  params:
+    # Custom Params (refer to include/openpose/flags.hpp for more parameters)
+    # all parameters defined here: https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/advanced/demo_advanced.md
+    process_real_time: True
+    number_people_max: 1
+    render_pose: 1
+    # "net_resolution": "-1x736"    # Multiples of 16. If it is increased, the accuracy potentially increases. If it is decreased, the speed increases. For maximum speed-accuracy balance, it should keep the closest aspect ratio possible to the images or videos to be processed. Using -1 in any of the dimensions, OP will choose the optimal aspect ratio depending on the user's input value.
+Simulator:
+  start_pybullet: false
+  build_geometry: true  # modified by HumanPoseWorld and HumanPoseWorld2 automatically to fit
+  playback: true
+  playback_file: "modular_drl_env/RGBDto3Dpose/res/training_2_joints.pkl"
+  playback_mode: 1
+  frame_duration: 0.05
+  save_performance_file: None   # none to deactivate performance test
+  simulate_limbs: True
+  simulate_joints: False
+  simulate_joint_connections: False
+  move_in_physic_sim: True
+  min_distance_to_move_outside_physic_sim: 0.05
+  time_delta_move_in_physic_sim: 0.01
+  joint_map: # do not change, as defined in OpenPose, as above
+    Nose: 0
+    Neck: 1
+    RShoulder: 2
+    RElbow: 3
+    RWrist: 4
+    LShoulder: 5
+    LElbow: 6
+    LWrist: 7
+    MidHip: 8
+    RHip: 9
+    RKnee: 10
+    RAnkle: 11
+    LHip: 12
+    LKnee: 13
+    LAnkle: 14
+    REye: 15
+    LEye: 16
+    REar: 17
+    LEar: 18
+    LBigToe: 19
+    LSmallToe: 20
+    LHeel: 21
+    RBigToe: 22
+    RSmallToe: 23
+    RHeel: 24
+    Background: 25
+  limbs: # must be: for all 'j1-j2': joint_map[j1] < joint_map[j2]
+    - [ 'Nose' ]
+    - [ 'Nose', 'Neck' ]
+    - [ 'Neck', 'MidHip' ]
+    - [ 'RShoulder', 'RElbow' ]
+    - [ 'LShoulder', 'LElbow' ]
+    - [ 'RElbow', 'RWrist' ]
+    - [ 'LElbow', 'LWrist' ]
+    - [ 'RWrist' ]
+    - [ 'LWrist' ]
+    - [ 'RHip', 'RKnee' ]
+    - [ 'LHip', 'LKnee' ]
+    - [ 'RKnee', 'RAnkle' ]
+    - [ 'LKnee', 'LAnkle' ]
+    - [ 'RAnkle', 'RBigToe' ]
+    - [ 'LAnkle', 'LBigToe' ]
+  radii:
+    Nose: 0.11
+    Nose-Neck: 0.06
+    Neck-MidHip: 0.2
+    RShoulder-RElbow: 0.05
+    LShoulder-LElbow: 0.05
+    RElbow-RWrist: 0.04
+    LElbow-LWrist: 0.04
+    RWrist: 0.2
+    LWrist: 0.2
+    RHip-RKnee: 0.07
+    LHip-LKnee: 0.07
+    RKnee-RAnkle: 0.06
+    LKnee-LAnkle: 0.06
+    RAnkle-RBigToe: 0.03
+    LAnkle-LBigToe: 0.03
+  lengths:
+    Nose-Neck: 0.2
+    Neck-MidHip: 0.6
+    RShoulder-RElbow: 0.35
+    LShoulder-LElbow: 0.35
+    RElbow-RWrist: 0.3
+    LElbow-LWrist: 0.3
+    RHip-RKnee: 0.5
+    LHip-LKnee: 0.5
+    RKnee-RAnkle: 0.45
+    LKnee-LAnkle: 0.45
+    RAnkle-RBigToe: 0.15
+    LAnkle-LBigToe: 0.15
+Debug:
+  mode: 2   # 0: color mask, 1: search area, 2: length, 3: view coordinates
+  length_args:
+    mode: 0   # 0: length, 1: depth
+    output_filename: null
+    custom_connections: null
+    connections_except: null
+  view_coordinates_args:
+    joints_to_show: [ 'RWrist']
