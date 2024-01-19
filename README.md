@@ -25,3 +25,54 @@ To get started with the project, please follow the instructions in the following
 - [Deployment](./Deployment.md): Guidelines for deploying the project in a Real World environment.
 
 Please ensure you read through all the sections to understand how to use the project effectively.
+
+## RGBD-to-3D-Pose Intgration
+This fork provides an example integration of [RGBD-to-3D-Pose](https://github.com/ZalZarak/RGBD-to-3D-Pose) into this repo.
+
+- Clone the project
+- Clone RGBD-to-3D-Pose as submodule:   
+  ``git submodule update --init --recursive``
+- Follow installation of RGBD-to-3D-Pose: [https://github.com/ZalZarak/RGBD-to-3D-Pose](https://github.com/ZalZarak/RGBD-to-3D-Pose)
+- Change the path of the RGBD-to-3D-Pose config under [modular_drl_env/RGBDto3Dpose/src/config.py](modular_drl_env/RGBDto3Dpose/src/config.py) to yours.
+- An example is provided here: [configs/RGBDto3dpose-configs/rgbdto3dpose-config-for-irdrl.yaml](configs/RGBDto3dpose-configs/rgbdto3dpose-config-for-irdrl.yaml)
+
+Example integrations are provided with those files:
+- [configs/human_pose_config.yaml](configs/human_pose_config.yaml)
+- [configs/human_pose_config_2.yaml](configs/human_pose_config_2.yaml)
+- [modular_drl_env/world/world_implementations/human_pose_world.py](modular_drl_env/world/world_implementations/human_pose_world.py)
+- [modular_drl_env/goal/goal_implementations/human_pose_goal.py](modular_drl_env/goal/goal_implementations/human_pose_goal.py)
+
+Preperation:   
+
+Create a simulator object, with your ``**your_config`` as input.   
+Config explanation: [modular_drl_env/RGBDto3Dpose/config/config_explanation.yaml](modular_drl_env/RGBDto3Dpose/config/config_explanation.yaml)
+
+Human Geometry needs to generated. This can be done manually, as in ``HumanPoseWorld``.   
+Then the pybullet object ids need to be added to ``simulator.limbs_pb`` at the correct place.
+Then in RGBDto3DPose config ``build_geometry`` must be ``false``.
+
+Or Simulator can do the generation, as in ``HumanPoseWorld2``.   
+Then ``pyb_u.pybullet_object_ids`` and ``pyb_u.gym_env_str_names`` need to be filled correctly.
+``build_geometry`` must be ``true``.
+
+If Simulator runs in real-time (with the perception module), you can move the limbs with ``simulator.process_frame_sync()``
+
+If Simulator reads the joints from a file, you can move with ``simulator.process_frame_at_time()``.   
+This takes a timestamp as input and moves the limbs to the positions defined in the closest next time stamp.
+You need to figure out how to calculate the current simulated time. ``HumanPoseWorld`` does it but requires a 
+speedup factor to show it in normal speed. This is an IR-DRL issue.
+
+The current joint positions are available under simulator.joints. 25th position is background. 
+See RGBDto3DPose config for details. 
+
+You may do something like 
+```
+try:
+    ret["joints"] = self.robot.world.sim.joints[:25, :].copy()
+except AttributeError and TypeError:
+    ret["joints"] = np.zeros([24, 3])
+```
+in ``get_observation`` method of your goal. I couldn't figure out how to make IR-DRL accept it.
+The Error should only arise during the first call, as world is not initialized yet.
+
+If geometry is generated with IR-DRL-tools, obstacles might be observed automatically, though I give you no guarantee for that.

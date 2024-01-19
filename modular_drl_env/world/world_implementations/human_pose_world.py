@@ -33,7 +33,7 @@ class HumanPoseWorld(World):
         c["build_geometry"] = False
         self.sim = Simulator(**c)
 
-        # pregenerate geometry
+        # pregenerate geometry and add to sim
         for limb in self.sim.limbs:
             if len(limb) == 1:  # if this limb has only one point, like head or hand, it's simulated with a sphere
                 n = Sphere(position=[0, 0, 0], trajectory=[], sim_step=self.sim_step, sim_steps_per_env_step=self.sim_steps_per_env_step,
