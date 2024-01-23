@@ -27,7 +27,7 @@ To get started with the project, please follow the instructions in the following
 Please ensure you read through all the sections to understand how to use the project effectively.
 
 ## RGBD-to-3D-Pose Intgration
-This fork provides an example integration of [RGBD-to-3D-Pose](https://github.com/ZalZarak/RGBD-to-3D-Pose) into this repo.
+This fork provides an example integration of [RGBD-to-3D-Pose](https://github.com/ZalZarak/RGBD-to-3D-Pose) into this repo. Last tested commit: f03256e
 
 - Clone the project
 - Clone RGBD-to-3D-Pose as submodule:   
@@ -65,7 +65,8 @@ speedup factor to show it in normal speed. This is an IR-DRL issue.
 Also, you can prevent Simulator from doing its own pybullet simulation steps by setting ``do_sim_steps`` to ``False``.
 Then you need to call ``pybullet.stepSimulation()`` by your own. ``reset_limb_velocities`` needs to be called manually 
 after each simulation step where limbs where moved. For efficient simulation, call 
-``p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, int(b))`` with ``b=False`` before the step and with ``b=True`` after the step.
+``p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, int(b))`` with ``b=False`` before the step and with ``b=True`` after the step.   
+No example is implemented, but you can orientate at the Simulator Function ``step_full``.
 
 The current joint positions are available under simulator.joints. 25th position is background. 
 See RGBDto3DPose config for details. 

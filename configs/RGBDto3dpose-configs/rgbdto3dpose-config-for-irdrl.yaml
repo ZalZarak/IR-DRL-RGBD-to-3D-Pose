@@ -180,6 +180,7 @@ OpenPoseHandler:
 Simulator:
   start_pybullet: false
   build_geometry: true  # modified by HumanPoseWorld and HumanPoseWorld2 automatically to fit
+  do_sim_steps: true
   playback: true
   playback_file: "modular_drl_env/RGBDto3Dpose/res/training_2_joints.pkl"
   playback_mode: 1
