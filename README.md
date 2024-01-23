@@ -62,6 +62,11 @@ This takes a timestamp as input and moves the limbs to the positions defined in 
 You need to figure out how to calculate the current simulated time. ``HumanPoseWorld`` does it but requires a 
 speedup factor to show it in normal speed. This is an IR-DRL issue.
 
+Also, you can prevent Simulator from doing its own pybullet simulation steps by setting ``do_sim_steps`` to ``False``.
+Then you need to call ``pybullet.stepSimulation()`` by your own. ``reset_limb_velocities`` needs to be called manually 
+after each simulation step where limbs where moved. For efficient simulation, call 
+``p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, int(b))`` with ``b=False`` before the step and with ``b=True`` after the step.
+
 The current joint positions are available under simulator.joints. 25th position is background. 
 See RGBDto3DPose config for details. 
 
@@ -76,3 +81,4 @@ in ``get_observation`` method of your goal. I couldn't figure out how to make IR
 The Error should only arise during the first call, as world is not initialized yet.
 
 If geometry is generated with IR-DRL-tools, obstacles might be observed automatically, though I give you no guarantee for that.
+
