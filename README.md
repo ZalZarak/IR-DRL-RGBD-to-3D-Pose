@@ -27,7 +27,7 @@ To get started with the project, please follow the instructions in the following
 Please ensure you read through all the sections to understand how to use the project effectively.
 
 ## RGBD-to-3D-Pose Intgration
-This fork provides an example integration of [RGBD-to-3D-Pose](https://github.com/ZalZarak/RGBD-to-3D-Pose) into this repo. Last tested commit: f03256e
+This fork provides an example integration of [RGBD-to-3D-Pose](https://github.com/ZalZarak/RGBD-to-3D-Pose) into this repo. Last tested commit: 15a0b4b061ba3ea3972e7939cd7cf6ff0c3acdf7
 
 - Clone the project
 - Clone RGBD-to-3D-Pose as submodule:   
